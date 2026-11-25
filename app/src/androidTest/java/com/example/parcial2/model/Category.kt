@@ -1,4 +1,6 @@
 package com.example.parcial2.model
 
-class Category {
-}
+data class Category(
+    val id: String,
+    val name: String
+)
