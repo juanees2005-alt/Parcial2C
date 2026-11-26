@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import com.example.parcial2.model.Expense
 import com.example.parcial2.viewmodel.TripDetailViewModel
 import kotlin.text.format
+import androidx.compose.foundation.lazy.items
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
