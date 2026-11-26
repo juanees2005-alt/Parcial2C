@@ -2,7 +2,6 @@ package com.example.parcial2.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -14,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.parcial2.model.Expense
 import com.example.parcial2.viewmodel.TripDetailViewModel
+import kotlin.text.format
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
