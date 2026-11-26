@@ -60,5 +60,25 @@ class RepositoriesTest {
 
         assertEquals(1, repository.filterByTrip("2").size)
         assertEquals(3, repository.filterByTrip("1").size)
+        assertEquals("3", repository.filterByTrip("2").single().categoryId)
+    }
+
+    @Test
+    fun observeExpensesByTrip_emitsNewExpenseAfterSave() = runBlocking {
+        val repository = InMemoryExpenseRepository()
+        repository.saveExpense(
+            Expense(
+                tripId = "1",
+                description = "Museo",
+                amount = 12.0,
+                categoryId = "4",
+                categoryName = "Entretenimiento",
+                expenseDate = "2026-06-15"
+            )
+        )
+
+        val observed = repository.observeExpensesByTrip("1").first()
+        assertEquals(4, observed.size)
+        assertTrue(observed.any { it.description == "Museo" })
     }
 }

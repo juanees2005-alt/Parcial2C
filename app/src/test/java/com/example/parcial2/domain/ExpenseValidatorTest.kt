@@ -45,6 +45,11 @@ class ExpenseValidatorTest {
     }
 
     @Test
+    fun blankDate_isInvalid() {
+        assertFalse(validator.validateExpense(validExpense().copy(expenseDate = ""), trip).isValid)
+    }
+
+    @Test
     fun dateBeforeTripStart_isInvalid() {
         assertFalse(validator.validateExpense(validExpense().copy(expenseDate = "2026-06-09"), trip).isValid)
     }

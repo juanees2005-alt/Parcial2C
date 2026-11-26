@@ -35,6 +35,12 @@ class TripValidatorTest {
     }
 
     @Test
+    fun blankStartOrEndDate_isInvalid() {
+        assertFalse(validator.validateTrip(validTrip().copy(startDate = "")).isValid)
+        assertFalse(validator.validateTrip(validTrip().copy(endDate = "")).isValid)
+    }
+
+    @Test
     fun startAfterEnd_isInvalid() {
         val result = validator.validateTrip(validTrip().copy(startDate = "2026-06-21"))
         assertFalse(result.isValid)
