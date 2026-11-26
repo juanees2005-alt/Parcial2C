@@ -4,15 +4,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.*
-import com.example.parcial2.data.CategoryRepository
-import com.example.parcial2.data.ExpenseRepository
-import com.example.parcial2.data.TripRepository
+import com.example.parcial2.data.InMemoryCategoryRepository
+import com.example.parcial2.data.InMemoryExpenseRepository
+import com.example.parcial2.data.InMemoryTripRepository
 import com.example.parcial2.domain.ExpenseCalculator
 import com.example.parcial2.domain.ExpenseValidator
 import com.example.parcial2.domain.TripValidator
-import com.example.parcial2.model.Category
-import com.example.parcial2.model.Expense
-import com.example.parcial2.model.Trip
 import com.example.parcial2.ui.CreateTripScreen
 import com.example.parcial2.ui.RegisterExpenseScreen
 import com.example.parcial2.ui.TripDetailScreen
@@ -22,10 +19,6 @@ import com.example.parcial2.viewmodel.CreateTripViewModel
 import com.example.parcial2.viewmodel.RegisterExpenseViewModel
 import com.example.parcial2.viewmodel.TripDetailViewModel
 import com.example.parcial2.viewmodel.TripListViewModel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
 
 private sealed interface Screen {
     data object TripList : Screen
@@ -38,50 +31,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val tripRepository = object : TripRepository {
-            private val tripsFlow = MutableStateFlow<List<Trip>>(emptyList())
-
-            override fun observeTrips(): Flow<List<Trip>> = tripsFlow.asStateFlow()
-
-            override fun getTripById(tripId: String): Trip? =
-                tripsFlow.value.firstOrNull { it.id == tripId }
-
-            override suspend fun saveTrip(trip: Trip) {
-                val current = tripsFlow.value.toMutableList()
-                val index = current.indexOfFirst { it.id == trip.id }
-                if (index >= 0) {
-                    current[index] = trip
-                } else {
-                    current.add(trip)
-                }
-                tripsFlow.value = current
-            }
-        }
-
-        val expenseRepository = object : ExpenseRepository {
-            private val expensesFlow = MutableStateFlow<List<Expense>>(emptyList())
-
-            override fun observeExpensesByTrip(tripId: String): Flow<List<Expense>> =
-                expensesFlow.map { list -> list.filter { it.tripId == tripId } }
-
-            override fun filterByTrip(tripId: String): List<Expense> =
-                expensesFlow.value.filter { it.tripId == tripId }
-
-            override suspend fun saveExpense(expense: Expense) {
-                val current = expensesFlow.value.toMutableList()
-                val index = current.indexOfFirst { it.id == expense.id }
-                if (index >= 0) {
-                    current[index] = expense
-                } else {
-                    current.add(expense)
-                }
-                expensesFlow.value = current
-            }
-        }
-
-        val categoryRepository = object : CategoryRepository {
-            override fun getCategories(): List<Category> = emptyList()
-        }
+        val tripRepository = InMemoryTripRepository()
+        val expenseRepository = InMemoryExpenseRepository()
+        val categoryRepository = InMemoryCategoryRepository()
 
         val tripValidator = TripValidator()
         val expenseValidator = ExpenseValidator()
@@ -100,7 +52,7 @@ class MainActivity : ComponentActivity() {
                             viewModel = tripListViewModel,
                             onCreateTripClick = { currentScreen = Screen.CreateTrip },
                             onTripClick = { tripId ->
-                                currentScreen = Screen.TripDetail(tripId.toString())
+                                currentScreen = Screen.TripDetail(tripId)
                             }
                         )
                     }
